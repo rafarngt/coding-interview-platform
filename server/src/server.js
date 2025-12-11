@@ -26,7 +26,7 @@ app.use(cors(corsOptions));
 app.use(express.json());
 
 // Serve static files from client build
-app.use(express.static(path.join(__dirname, '../client/dist')));
+app.use(express.static(path.join(__dirname, '../../client/dist')));
 
 // Store active sessions and users
 const sessions = new Map();
@@ -172,7 +172,7 @@ app.get('/debug', (req, res) => {
   const path = require('path');
 
   try {
-    const clientDistPath = path.join(__dirname, '../client/dist');
+    const clientDistPath = path.join(__dirname, '../../client/dist');
     const indexPath = path.join(clientDistPath, 'index.html');
 
     const debug = {
@@ -196,7 +196,7 @@ app.get('/debug', (req, res) => {
 
 // Catch-all handler for React Router - serve index.html for non-API routes
 app.get('*', (req, res) => {
-  res.sendFile(path.join(__dirname, '../client/dist/index.html'));
+  res.sendFile(path.join(__dirname, '../../client/dist/index.html'));
 });
 
 const PORT = process.env.PORT || 3001;
