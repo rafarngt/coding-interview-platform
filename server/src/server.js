@@ -3,22 +3,30 @@ const http = require('http');
 const { Server } = require('socket.io');
 const cors = require('cors');
 const { v4: uuidv4 } = require('uuid');
+const path = require('path');
 
 const app = express();
 const server = http.createServer(app);
+
+// CORS configuration - allow all origins in production
+const corsOptions = {
+  origin: process.env.NODE_ENV === 'production'
+    ? true  // Allow all origins in production
+    : ["http://localhost:5174", "http://localhost:3001"],
+  methods: ["GET", "POST"],
+  credentials: true
+};
+
 const io = new Server(server, {
-  cors: {
-    origin: "http://localhost:5174",
-    methods: ["GET", "POST"]
-  }
+  cors: corsOptions
 });
 
 // Middleware
-app.use(cors({
-  origin: "http://localhost:5174",
-  methods: ["GET", "POST"]
-}));
+app.use(cors(corsOptions));
 app.use(express.json());
+
+// Serve static files from client build
+app.use(express.static(path.join(__dirname, '../client/dist')));
 
 // Store active sessions and users
 const sessions = new Map();
@@ -156,6 +164,11 @@ app.get('/health', (req, res) => {
     activeSessions: sessions.size,
     connectedUsers: users.size
   });
+});
+
+// Catch-all handler for React Router - serve index.html for non-API routes
+app.get('*', (req, res) => {
+  res.sendFile(path.join(__dirname, '../client/dist/index.html'));
 });
 
 const PORT = process.env.PORT || 3001;
