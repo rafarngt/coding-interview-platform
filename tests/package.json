@@ -1,0 +1,29 @@
+{
+  "name": "tests",
+  "version": "1.0.0",
+  "description": "Integration tests for coding interview platform",
+  "main": "index.js",
+  "scripts": {
+    "test": "mocha test/**/*.test.js --timeout 10000",
+    "test:watch": "mocha test/**/*.test.js --timeout 10000 --watch",
+    "test:server": "node test/server-setup.js"
+  },
+  "keywords": [
+    "integration-tests",
+    "coding-interview",
+    "websocket"
+  ],
+  "author": "",
+  "license": "ISC",
+  "type": "commonjs",
+  "dependencies": {
+    "chai": "^4.3.10",
+    "socket.io-client": "^4.8.1",
+    "supertest": "^6.3.3"
+  },
+  "devDependencies": {
+    "concurrently": "^8.2.2",
+    "mocha": "^10.8.2",
+    "nodemon": "^3.1.11"
+  }
+}
