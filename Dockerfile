@@ -23,11 +23,10 @@ FROM node:20-alpine AS production
 WORKDIR /app
 
 # Copy server package files
-COPY server/package*.json ./server/
+COPY server/package*.json ./
 
-# Install only production dependencies
-WORKDIR /app/server
-RUN npm ci --only=production && npm cache clean --force
+# Install server dependencies
+RUN npm install
 
 # Copy server source
 COPY server/src ./server/src
