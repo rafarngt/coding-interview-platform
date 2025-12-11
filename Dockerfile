@@ -1,71 +1,54 @@
-# Use Node.js 18 Alpine as base image
-FROM node:18-alpine
+# Stage 1: Build the client
+FROM node:20-alpine AS builder
 
-# Set working directory
 WORKDIR /app
 
-# Install system dependencies
-RUN apk add --no-cache \
-    git \
-    python3 \
-    make \
-    g++ \
-    cairo-dev \
-    jpeg-dev \
-    pango-dev \
-    musl-dev \
-    giflib-dev \
-    pixman-dev \
-    pangomm-dev \
-    libjpeg-turbo-dev \
-    freetype-dev
-
-# Copy package.json files
-COPY package*.json ./
+# Copy client package files
 COPY client/package*.json ./client/
-COPY server/package*.json ./server/
-COPY tests/package*.json ./tests/
 
-# Install dependencies for all packages
-RUN npm ci --only=production
-
-# Install development dependencies for build
+# Install client dependencies
+WORKDIR /app/client
 RUN npm ci
 
-# Build the client application
-WORKDIR /app/client
+# Copy client source and build
+COPY client/src ./client/src
+COPY client/public ./client/public
+COPY client/index.html ./client/
+COPY client/vite.config.js ./client/
 RUN npm run build
 
-# Install server dependencies
-WORKDIR /app/server
-RUN npm ci --only=production
+# Stage 2: Production
+FROM node:20-alpine AS production
 
-# Go back to root
 WORKDIR /app
 
-# Copy source code
+# Copy server package files
+COPY server/package*.json ./server/
+
+# Install only production dependencies
+WORKDIR /app/server
+RUN npm ci --only=production && npm cache clean --force
+
+# Copy server source
 COPY server/src ./server/src
-COPY client/dist ./client/dist
 
-# Copy tests (optional for CI/CD)
-COPY tests ./tests
+# Copy built client from builder stage
+COPY --from=builder /app/client/dist ./client/dist
 
-# Create non-root user for security
+# Create non-root user
 RUN addgroup -g 1001 -S nodejs && \
     adduser -S nodejs -u 1001
 
-# Change ownership of the app directory
+# Change ownership
 RUN chown -R nodejs:nodejs /app
 
-# Switch to non-root user
 USER nodejs
 
-# Expose port
 EXPOSE 3001
 
 # Health check
 HEALTHCHECK --interval=30s --timeout=3s --start-period=5s --retries=3 \
-    CMD node -e "require('http').get('http://localhost:3001/health', (res) => { process.exit(res.statusCode === 200 ? 0 : 1) }).on('error', () => process.exit(1))"
+  CMD node -e "require('http').get('http://localhost:3001/health', (res) => { process.exit(res.statusCode === 200 ? 0 : 1) }).on('error', () => process.exit(1))"
 
 # Start the server
 CMD ["node", "server/src/server.js"]

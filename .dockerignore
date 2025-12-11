@@ -4,16 +4,18 @@ npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
 
-# Build outputs (except client/dist which we need)
-client/src
-client/public
-!client/dist
+# Build outputs (we need client/src for build)
+!client/src
+!client/public
+client/dist
 
 # Development files
 .git
 .gitignore
 README.md
 CLAUDE.md
+CLOUD_RUN_DEPLOYMENT.md
+HOMEWORK_ANSWERS.md
 .env
 .env.local
 .env.development.local
@@ -42,3 +44,6 @@ coverage
 # Temporary files
 *.tmp
 *.temp
+
+# Tests
+tests
