@@ -1,20 +1,19 @@
 # Stage 1: Build the client
 FROM node:20-alpine AS builder
 
-WORKDIR /app
+WORKDIR /app/client
 
 # Copy client package files
-COPY client/package*.json ./client/
+COPY client/package*.json ./
 
 # Install client dependencies
-WORKDIR /app/client
-RUN npm ci
+RUN npm install
 
 # Copy client source and build
-COPY client/src ./client/src
-COPY client/public ./client/public
-COPY client/index.html ./client/
-COPY client/vite.config.js ./client/
+COPY client/src ./src
+COPY client/public ./public
+COPY client/index.html ./
+COPY client/vite.config.js ./
 RUN npm run build
 
 # Stage 2: Production
