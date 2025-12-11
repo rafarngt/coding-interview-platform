@@ -61,5 +61,5 @@ jobs:
 
       - name: Show URL
         run: |
-          echo "🚀 App deployed at: https://${{ env.SERVICE_NAME }}-${{ env.PROJECT_ID }}.run.app"
-          echo "🔧 Health check: https://${{ env.SERVICE_NAME }}-${{ env.PROJECT_ID }}.run.app/health"
+          echo " 🚀 App deployed at: https://${{ env.SERVICE_NAME }}-${{ env.PROJECT_ID }}.run.app"
+          echo " 🔧 Health check: https://${{ env.SERVICE_NAME }}-${{ env.PROJECT_ID }}.run.app/health"
