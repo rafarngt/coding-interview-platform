@@ -166,6 +166,34 @@ app.get('/health', (req, res) => {
   });
 });
 
+// Debug endpoint to check file structure
+app.get('/debug', (req, res) => {
+  const fs = require('fs');
+  const path = require('path');
+
+  try {
+    const clientDistPath = path.join(__dirname, '../client/dist');
+    const indexPath = path.join(clientDistPath, 'index.html');
+
+    const debug = {
+      workingDir: __dirname,
+      clientDistPath,
+      indexPath,
+      clientDistExists: fs.existsSync(clientDistPath),
+      indexExists: fs.existsSync(indexPath),
+      files: []
+    };
+
+    if (fs.existsSync(clientDistPath)) {
+      debug.files = fs.readdirSync(clientDistPath);
+    }
+
+    res.json(debug);
+  } catch (error) {
+    res.json({ error: error.message });
+  }
+});
+
 // Catch-all handler for React Router - serve index.html for non-API routes
 app.get('*', (req, res) => {
   res.sendFile(path.join(__dirname, '../client/dist/index.html'));
